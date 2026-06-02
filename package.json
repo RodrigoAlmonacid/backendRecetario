@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "TP 3 \r Grupo +549",
   "main": "index.js",
-  "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
-  },
+ "scripts": {
+  "start": "node src/index.js",
+  "dev": "nodemon src/index.js"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RodrigoAlmonacid/backendRecetario.git"
@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/RodrigoAlmonacid/backendRecetario/issues"
   },
