@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "TP 3 \r Grupo +549",
   "main": "index.js",
- "scripts": {
-  "start": "node src/index.js",
-  "dev": "nodemon src/index.js"
-},
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RodrigoAlmonacid/backendRecetario.git"
@@ -20,11 +20,13 @@
   },
   "homepage": "https://github.com/RodrigoAlmonacid/backendRecetario#readme",
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.3"
   }
 }
