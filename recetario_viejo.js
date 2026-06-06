@@ -1,4 +1,4 @@
-[
+export const recetario = [
   {
     "id": "1",
     "image": "https://img.spoonacular.com/recipes/716417-556x370.jpg",
@@ -2255,4 +2255,4 @@
       }
     }
   }
-]
+];
