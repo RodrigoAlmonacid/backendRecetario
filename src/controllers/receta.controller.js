@@ -5,9 +5,12 @@ import {
 
 //Metodo GET
 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 export const getRecetas = async (req, res) => {
   try {
     const { search, lang } = req.query;
+    const todasLasRecetas = await prisma.receta.findMany();
     res.status(200).json({
       status: "ok",
       message: "Lista de recetas obtenida",
@@ -18,6 +21,11 @@ export const getRecetas = async (req, res) => {
     res
       .status(500)
       .json({ status: "error", message: "Error inesperado del servidor" });
+      data: todasLasRecetas
+    });
+  } catch (error) {
+    console.error("Error al obtener recetas:", error); 
+    res.status(500).json({ status: "error", message: "Error inesperado del servidor" });
   }
 };
 
