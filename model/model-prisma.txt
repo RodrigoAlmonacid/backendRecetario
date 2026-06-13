@@ -1,0 +1,52 @@
+model Receta {
+  idReceta     Int          @id @default(autoincrement())
+  urlImagen    String
+  cookingTime  Int          
+  servings     Int          
+  isGlutenFree Boolean      
+  type         String       
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relación 1 a N con las traducciones
+  traducciones Traduccion[] 
+  // Relación 1 a N con Favorites
+  favorites    Favorites[]
+}
+
+model Traduccion {
+  lang          String   
+  idReceta      Int      //foránea
+  title         String
+  description   String
+  
+  //Arreglos nativos de PostgreSQL
+  ingredients   String[] 
+  instruction   String[] 
+
+  // Definición de la relación con Receta
+  receta        Receta   @relation(fields: [idReceta], references: [idReceta], onDelete: Cascade)
+  //clave primaria compuesta por ser entidad débil
+  @@id([idReceta, lang])
+}
+
+model Usuario {
+    idUsuario         Int       @id @default(autoincrement())
+    nombreUsuario     String    @unique
+    pass              String
+
+    //Relación 1 a N con favoritos
+    favorites    Favorites[]
+}
+
+model Favorites {
+    idReceta         Int
+    idUsuario        Int
+
+    //relacion N:M
+    receta        Receta   @relation(fields: [idReceta], references: [idReceta], onDelete: Cascade)
+    usuario       Usuario  @relation(fields: [idUsuario], references: [idUsuario], onDelete: Cascade)
+
+    // Clave primaria compuesta para la tabla intermedia
+    @@id([idReceta, idUsuario])
+}

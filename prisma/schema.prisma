@@ -1,0 +1,62 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model receta {
+    idReceta     Int      @id @default(autoincrement())
+    urlImagen    String
+    cookingTime  Int
+    servings     Int
+    isGlutenFree Boolean
+    type         String
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    // Relación 1 a N con las traducciones
+    traducciones content[]
+    // Relación 1 a N con Favorites
+    favorites    favorites[]
+}
+
+model content {
+    lang        String
+    idReceta    Int //foránea
+    title       String
+    description String
+
+    //Arreglos nativos de PostgreSQL
+    ingredients String[]
+    instruction String[]
+
+    // Definición de la relación con Receta
+    receta receta @relation(fields: [idReceta], references: [idReceta], onDelete: Cascade)
+
+    //clave primaria compuesta por ser entidad débil
+    @@id([idReceta, lang])
+}
+
+model usuario {
+    idUsuario     Int    @id @default(autoincrement())
+    nombreUsuario String @unique
+    pass          String
+
+    //Relación 1 a N con favoritos
+    favorites favorites[]
+}
+
+model favorites {
+    idReceta  Int
+    idUsuario Int
+
+    //relacion N:M
+    receta  receta  @relation(fields: [idReceta], references: [idReceta], onDelete: Cascade)
+    usuario usuario @relation(fields: [idUsuario], references: [idUsuario], onDelete: Cascade)
+
+    // Clave primaria compuesta para la tabla intermedia
+    @@id([idReceta, idUsuario])
+}
