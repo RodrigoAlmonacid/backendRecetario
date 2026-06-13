@@ -4,24 +4,36 @@ const isNonEmptyString = (value) => {
   return typeof value === "string" && value.trim() !== "";
 };
 
-const validateRecetaBody = (body) => {
+export const validateRecetaBody = (body) => {
   const errors = [];
-  const { title, description, ingredients, instructions, lang } = body;
-  // si title es "falsy" , es un tipo string y saca los espacios en blanco. 
-  if (!title || typeof title !== 'string' || title.trim() === "") {
-    errors.push("El campo 'title' es obligatorio.");
+  const { cookingTime, servings, isGlutenFree, type, traducciones } = body;
+
+  if (cookingTime !== undefined && typeof cookingTime !== 'number') {
+    errors.push("El campo 'cookingTime' debe ser un número.");
   }
-  if (!description || typeof description !== 'string' || description.trim() === "") {
-    errors.push("El campo 'description' es obligatorio.");
+  if (servings !== undefined && typeof servings !== 'number') {
+    errors.push("El campo 'servings' debe ser un número.");
   }
-  if (typeof ingredients !== 'string') {
-    errors.push("El campo 'ingredients' es obligatorio y debe ser un string (puede ser vacío).");
+  if (isGlutenFree !== undefined && typeof isGlutenFree !== 'boolean') {
+    errors.push("El campo 'isGlutenFree' debe ser un booleano (true/false).");
   }
-  if (typeof instructions !== 'string') {
-    errors.push("El campo 'instructions' es obligatorio y debe ser un string (puede ser vacío).");
-  }
-  if (!lang || !['en', 'es'].includes(lang)) {
-    errors.push("El campo 'lang' es obligatorio y debe ser 'en' o 'es'.");
+
+  if (!traducciones || !Array.isArray(traducciones) || traducciones.length === 0) {
+    errors.push("El campo 'traducciones' es obligatorio y debe ser un arreglo con al menos un idioma.");
+  } else {
+    traducciones.forEach((trad, index) => {
+      if (!trad.lang || !['en', 'es'].includes(trad.lang)) {
+        errors.push(`En la traducción [${index}]: 'lang' es obligatorio y debe ser 'en' o 'es'.`);
+      }
+
+      if (trad.ingredients !== undefined && !Array.isArray(trad.ingredients)) {
+        errors.push(`En la traducción [${trad.lang}]: 'ingredients' debe ser un arreglo de strings.`);
+      }
+      if (trad.instruction !== undefined && !Array.isArray(trad.instruction)) {
+        errors.push(`En la traducción [${trad.lang}]: 'instruction' debe ser un arreglo de strings.`);
+      }
+      
+    });
   }
 
   return errors;
