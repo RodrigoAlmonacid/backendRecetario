@@ -6,10 +6,19 @@ import recetaRoutes from './routes/receta.routes.js';
 
 dotenv.config();
 const app = express();
+
+const origenesPermitidos = [
+  process.env.FRONTEND_URL, 
+  'http://localhost:5173'   
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+  origin: origenesPermitidos
 }));
+
 app.use(express.json());
+
 app.use('/api', healthRoutes);
 app.use('/api/recetas', recetaRoutes);
+
 export default app;
