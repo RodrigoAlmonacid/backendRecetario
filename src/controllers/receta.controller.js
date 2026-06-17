@@ -12,31 +12,59 @@ const prisma = new PrismaClient();
 
 export const getRecetas = async (req, res) => {
   try {
-    const { search, lang } = req.query;
+    const { search, lang, page = 1, limit = 9, type, tiempo, porciones } = req.query;
     const idiomaSeleccionado = lang || "es";
 
+    const pageNumber = Number(page);
+    const pageSize = Number(limit);
+    const skip = (pageNumber - 1) * pageSize;
+
+    const whereClause = {
+      ...(type ? { type: type } : {}),
+      ...(tiempo ? { cookingTime: { lte: Number(tiempo) } } : {}),
+      ...(porciones ? { servings: { gte: Number(porciones) } } : {}),
+      
+      traducciones: {
+        some: {
+          lang: idiomaSeleccionado,
+          ...(search ? {
+            title: {
+              contains: search,
+              mode: "insensitive" 
+            }
+          } : {})
+        }
+      }
+    };
+
+    const totalRecetas = await prisma.receta.count({ where: whereClause });
+
     const todasLasRecetas = await prisma.receta.findMany({
+      where: whereClause,
+      skip: skip,
+      take: pageSize,
       include: {
         traducciones: {
-          where: {
-            lang: idiomaSeleccionado
-          }
+          where: { lang: idiomaSeleccionado }
         }
       }
     });
+
     res.status(200).json({
       status: "ok",
       message: "Lista de recetas obtenida",
-      filtrosAplicados: { search, lang },
+      filtrosAplicados: { search, lang, page: pageNumber, limit: pageSize },
+      totalItems: totalRecetas,
+      totalPages: Math.ceil(totalRecetas / pageSize), // Clave para los botones del front
       data: todasLasRecetas,
     });
   } catch (error) {
-    res.status(500)
-      .json({
-        status: "error",
-        message: "Error inesperado del servidor",
-        data: []
-      });
+    console.error(error);
+    res.status(500).json({
+      status: "error",
+      message: "Error inesperado del servidor",
+      data: []
+    });
   }
 };
 
@@ -111,7 +139,7 @@ export const createReceta = async (req, res) => {
 
     const nuevaReceta = await prisma.receta.create({
       data: {
-        urlImagen: urlImagen || "https://ruta-por-defecto.png",
+        urlImagen: urlImagen || "https://img.freepik.com/vector-premium/plato-comida-icono-plano-diseno-vector-ilustracion_100456-1144.jpg",
         cookingTime: Number(cookingTime) || 0,
         servings: Number(servings) || 0,
         isGlutenFree: Boolean(isGlutenFree),
@@ -162,18 +190,18 @@ export const updateReceta = async (req, res) => {
         lang: trad.lang,
         title: trad.title ? trad.title : "Título no disponible / Title not available",
         description: trad.description ? trad.description : "Traducción no disponible / Translation not available",
-        ingredients: Array.isArray(trad.ingredients) && trad.ingredients.length > 0 
-          ? trad.ingredients 
+        ingredients: Array.isArray(trad.ingredients) && trad.ingredients.length > 0
+          ? trad.ingredients
           : ["Sin ingredientes / No ingredients"],
-        instruction: Array.isArray(trad.instruction) && trad.instruction.length > 0 
-          ? trad.instruction 
+        instruction: Array.isArray(trad.instruction) && trad.instruction.length > 0
+          ? trad.instruction
           : ["Sin instrucciones / No instructions"]
       };
     });
 
     const recetaActualizada = await prisma.receta.update({
-      where: { 
-        idReceta: id 
+      where: {
+        idReceta: id
       },
       data: {
         urlImagen,
