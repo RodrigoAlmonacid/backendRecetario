@@ -42,8 +42,9 @@ model content {
 
 model usuario {
     idUsuario     Int    @id @default(autoincrement())
-    nombreUsuario String @unique
+    email         String @unique
     pass          String
+    rol           String
 
     //Relación 1 a N con favoritos
     favorites favorites[]

@@ -1,0 +1,39 @@
+import { PrismaClient } from '@prisma/client';
+import jwt from 'jsonwebtoken';
+
+const prisma = new PrismaClient();
+const JWT_SECRET = process.env.JWT_SECRET || 'json-web-token-prueba-local'; 
+
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await prisma.usuario.findUnique({
+      where: { email: email }
+    });
+    if (!user) {
+      return res.status(401).json({ error: "Credenciales inválidas (correo)" });
+    }
+    if (user.pass !== password) {
+      return res.status(401).json({ error: "Credenciales inválidas (pass)" });
+    }
+    const accessToken = jwt.sign(
+      { id: user.idUsuario || user.id, email: user.email }, 
+      JWT_SECRET, 
+      { expiresIn: '24h' }
+    );
+
+    const refreshToken = "dummy-refresh-token-prueba-local";
+    delete user.pass;
+
+    return res.json({
+      user,
+      accessToken,
+      refreshToken
+    });
+
+  } catch (error) {
+    console.error("Error en el login backend:", error);
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
