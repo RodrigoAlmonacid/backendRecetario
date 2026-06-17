@@ -10,8 +10,9 @@ dotenv.config();
 const app = express();
 
 const origenesPermitidos = [
-  process.env.FRONTEND_URL, 
-  'http://localhost:5173'   
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:5174' // <-- AGREGÁ ESTA LÍNEA AQUÍ
 ];
 
 app.use(cors({

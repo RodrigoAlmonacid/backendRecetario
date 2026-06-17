@@ -11,27 +11,19 @@ export const login = async (req, res) => {
     const user = await prisma.usuario.findUnique({
       where: { email: email }
     });
-
-    // Si no existe el usuario, cortamos acá
     if (!user) {
       return res.status(401).json({ error: "Credenciales inválidas (correo)" });
     }
-
-    //comparo contraseña cruda (cambiar si usamos algún hasheo)
     if (user.pass !== password) {
       return res.status(401).json({ error: "Credenciales inválidas (pass)" });
     }
-    //se genera acces token
     const accessToken = jwt.sign(
-      { id: user.id, email: user.email }, 
+      { id: user.idUsuario || user.id, email: user.email }, 
       JWT_SECRET, 
       { expiresIn: '24h' }
     );
 
-    //texto dummy para el frint
     const refreshToken = "dummy-refresh-token-prueba-local";
-
-    //limipo la contra
     delete user.pass;
 
     return res.json({
