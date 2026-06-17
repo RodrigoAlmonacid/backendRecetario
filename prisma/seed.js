@@ -6,16 +6,16 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Inicializando migración de recetas...');
   const usuariosPrueba = [
-    { nombreUsuario: "Sol", pass: "Sol123" },
-    { nombreUsuario: "Nico", pass: "Nico123" },
-    { nombreUsuario: "Rodrigo", pass: "Rodrigo123" },
-    { nombreUsuario: "ProfeAgus", pass: "Agus123" },
-    { nombreUsuario: "ProfeLucas", pass: "Lucas123" },
+    { email: "sol@prueba.com", pass: "Sol123", rol: "administrador" },
+    { email: "nico@prueba.com", pass: "Nico123", rol: "administrador" },
+    { email: "rodrigo@prueba.com", pass: "Rodrigo123", rol: "administrador"  },
+    { email: "profeagus@prueba.com", pass: "Agus123", rol: "administrador" },
+    { email: "profelucas@prueba.com", pass: "Lucas123", rol: "administrador" },
   ];
 
   for (const usuario of usuariosPrueba) {
     await prisma.usuario.upsert({
-      where: { nombreUsuario: usuario.nombreUsuario },
+      where: { email: usuario.email },
       update: {},
       create: usuario,
     });
