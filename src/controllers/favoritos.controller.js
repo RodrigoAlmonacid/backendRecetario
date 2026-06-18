@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export const getFavoritosIds = async (req, res) => {
   try {
-    const idUsuario = req.usuario.idUsuario; 
+    const idUsuario = req.usuario.idUsuario;
 
     const favoritos = await prisma.favorites.findMany({
       where: { idUsuario: idUsuario },
@@ -34,9 +34,9 @@ export const toggleFavorito = async (req, res) => {
     const { idReceta } = req.body;
 
     if (!idReceta || Number.isNaN(Number(idReceta))) {
-      return res.status(400).json({ 
-        status: "error", 
-        message: "ID de receta inválido" 
+      return res.status(400).json({
+        status: "error",
+        message: "ID de receta inválido"
       });
     }
 
@@ -60,11 +60,11 @@ export const toggleFavorito = async (req, res) => {
           }
         }
       });
-      return res.status(200).json({ 
-        status: "ok", 
-        message: "Receta eliminada de favoritos" 
+      return res.status(200).json({
+        status: "ok",
+        message: "Receta eliminada de favoritos"
       });
-      
+
     } else {
       await prisma.favorites.create({
         data: {
@@ -72,53 +72,61 @@ export const toggleFavorito = async (req, res) => {
           idUsuario: idUsuario
         }
       });
-      return res.status(201).json({ 
-        status: "ok", 
-        message: "Receta agregada a favoritos" 
+      return res.status(201).json({
+        status: "ok",
+        message: "Receta agregada a favoritos"
       });
     }
 
   } catch (error) {
     console.error("Error en toggleFavorito:", error);
-    res.status(500).json({ 
-      status: "error", 
-      message: "Error inesperado del servidor" 
+    res.status(500).json({
+      status: "error",
+      message: "Error inesperado del servidor"
     });
   }
 };
 
 export const getRecetasFavoritas = async (req, res) => {
   try {
-    const idUsuario = req.usuario.idUsuario; 
+    const idUsuario = req.usuario.idUsuario;
     const { lang, page = 1, limit = 9 } = req.query;
     const idiomaSeleccionado = lang || "es";
-    
+
     const skip = (Number(page) - 1) * Number(limit);
     const take = Number(limit);
 
-    const favoritos = await prisma.favorites.findMany({
-      where: { idUsuario: idUsuario },
-      skip: skip,
-      take: take,
-      include: {
-        receta: {
-          include: {
-            traducciones: {
-              where: {
-                lang: idiomaSeleccionado
+    const [favoritos, totalFavoritos] = await Promise.all([
+      prisma.favorites.findMany({
+        where: { idUsuario: idUsuario },
+        skip: skip,
+        take: take,
+        include: {
+          receta: {
+            include: {
+              traducciones: {
+                where: {
+                  lang: idiomaSeleccionado
+                }
               }
             }
           }
         }
-      }
-    });
+      }),
 
+      prisma.favorites.count({
+        where: { idUsuario: idUsuario }
+      })
+    ])
+
+    const totalPages = Math.ceil(totalFavoritos / Number(limit));
     const recetasFormateadas = favoritos.map(fav => fav.receta);
 
     res.status(200).json({
       status: "ok",
       message: "Lista de recetas favoritas obtenida",
       filtrosAplicados: { lang, page, limit },
+      totalPages: totalPages,
       data: recetasFormateadas,
     });
   } catch (error) {
