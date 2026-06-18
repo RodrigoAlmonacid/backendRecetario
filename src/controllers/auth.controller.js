@@ -12,10 +12,10 @@ export const login = async (req, res) => {
       where: { email: email }
     });
     if (!user) {
-      return res.status(401).json({ error: "Credenciales inválidas (correo)" });
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
     if (user.pass !== password) {
-      return res.status(401).json({ error: "Credenciales inválidas (pass)" });
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
     const accessToken = jwt.sign(
       { id: user.idUsuario || user.id, email: user.email }, 
