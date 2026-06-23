@@ -59,9 +59,3 @@ npx prisma db seed
 Listo! Ya podés prender el backend en modo desarrollo corriendo:
 npm run dev
 La API va a quedar escuchando y lista para recibir peticiones en http://localhost:3000.
-
-
-```env
-PORT=3000
-DATABASE_URL="postgresql://usuario:contraseña@host:puerto/base_de_datos?sslmode=require"
-FRONTEND_URL="http://localhost:5173"
