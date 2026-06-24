@@ -3,8 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import healthRoutes from './routes/health.routes.js';
 import recetaRoutes from './routes/receta.routes.js';
-import authRoutes from './routes/auth.routes.js'
-import favoritosRoutes from './routes/favoritos.routes.js'
+import authRoutes from './routes/auth.routes.js';
+import favoritosRoutes from './routes/favoritos.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 const app = express();
@@ -27,5 +28,7 @@ app.use('/api/recetas', recetaRoutes);
 app.use('/api/auth', authRoutes)
 
 app.use("/api/favoritos", favoritosRoutes);
+
+app.use('/api/usuarios', userRoutes);
 
 export default app;
