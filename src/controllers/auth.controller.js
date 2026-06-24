@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import jwt from "jsonwebtoken";
 import { generarAccessToken, generarRefreshToken } from './../helpers/jwt.js';
 import bcrypt from 'bcrypt';
 
@@ -77,5 +78,34 @@ export const registerUsuario = async (req, res) => {
   } catch (error) {
     console.error("Error al registrar usuario:", error);
     res.status(500).json({ message: "Error interno del servidor" });
+  }
+};
+
+export const renovarToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ error: "No se proporcionó el token de refresco" });
+  }
+
+  try {
+    const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_TOKEN;
+    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+
+    const usuario = await prisma.usuario.findUnique({
+      where: { idUsuario: decoded.id } 
+    });
+
+    if (!usuario) {
+      return res.status(403).json({ error: "El usuario ya no existe" });
+    }
+
+    const nuevoAccessToken = generarAccessToken(usuario);
+
+    return res.json({ accessToken: nuevoAccessToken });
+
+  } catch (error) {
+    console.error("Error al renovar token:", error);
+    return res.status(403).json({ error: "Token de refresco inválido o expirado" });
   }
 };
