@@ -59,3 +59,4 @@ npx prisma db seed
 Listo! Ya podés prender el backend en modo desarrollo corriendo:
 npm run dev
 La API va a quedar escuchando y lista para recibir peticiones en http://localhost:3000.
+
