@@ -1,16 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 import { recetario } from '../recetario_viejo.js';
+import  bcrypt  from 'bcrypt'
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Inicializando migración de recetas...');
   const usuariosPrueba = [
-    { email: "sol@prueba.com", pass: "Sol123", rol: "administrador" },
-    { email: "nico@prueba.com", pass: "Nico123", rol: "administrador" },
-    { email: "rodrigo@prueba.com", pass: "Rodrigo123", rol: "administrador"  },
-    { email: "profeagus@prueba.com", pass: "Agus123", rol: "administrador" },
-    { email: "profelucas@prueba.com", pass: "Lucas123", rol: "administrador" },
+    { email: "sol@prueba.com", pass: await bcrypt.hash("Sol123", 10), rol: "administrador" }, //hasheo con bcrypt tp seguridad
+    { email: "nico@prueba.com", pass: await bcrypt.hash("Nico123", 10), rol: "administrador" },
+    { email: "rodrigo@prueba.com", pass: await bcrypt.hash("Rodrigo123", 10), rol: "administrador"  },
+    { email: "profeagus@prueba.com", pass: await bcrypt.hash("Agus123", 10), rol: "administrador" },
+    { email: "profelucas@prueba.com", pass: await bcrypt.hash("Lucas123", 10), rol: "administrador" },
   ];
 
   for (const usuario of usuariosPrueba) {
