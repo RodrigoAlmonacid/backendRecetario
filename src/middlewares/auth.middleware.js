@@ -9,7 +9,7 @@ export const verificarToken = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    const JWT_SECRET = process.env.JWT_SECRET || 'json-web-token-prueba-local';
+    const JWT_SECRET = process.env.JWT_ACCESS_TOKEN;
     const decoded = jwt.verify(token, JWT_SECRET);
 
     req.usuario = {
